@@ -1,9 +1,8 @@
 #include "timer1.h" 
-#include "mcu.h"
 #include <avr/interrupt.h> 
 #include <avr/io.h> 
-#include <stdio.h>
 #include "bit_ops.h"
+#include "mcu.h"
 
 // Datasheet p. 154
 #define TCCR1A_WGM_MODE_OFFSET (0)
@@ -108,18 +107,12 @@ void timer1_set_frequency(uint16_t frequency_hz) {
 void setup_timer1(void) {
     // Reset module
     reset_timer1_module();
+
+    DDRB |= (1 << DDB1);
     
     // Set waveform generation mode to PWM phase and frequency correct with OCRA as top
     set_waveform_generation_mode(WGM_MODE_PWM_PHASE_FREQ_CORRECT_OCRA);
     
     // Turn output on channel A off
     timer1_channel_A_off();
-    
-    // Print out all register values to serial as hexadecimals
-    printf("Timer1 Setup Complete:\r\n");
-    printf("TCCR1A = 0x%x\r\n", CONTROL_REGISTER_A);
-    printf("TCCR1B = 0x%x\r\n", CONTROL_REGISTER_B);
-    printf("TCNT1 = 0x%x\r\n", TIMER_COUNT);
-    printf("OCR1A = 0x%x\r\n", OUTPUT_COMPARE_A);
-    printf("TIMSK1 = 0x%x\r\n", INTERRUPT_MASK);
 }
