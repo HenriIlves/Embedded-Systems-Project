@@ -17,7 +17,7 @@
 #define G2  196
 #define GS2 208    // G# / Ab
 #define A2  220
-#define AS2 233    // A# / Bb
+// #define AS2 233    // A# / Bb // Antaa errorin kun jossain muuallakin saman niminen muuttuja"
 #define B2  247
 
 // --- Octave 3 ---

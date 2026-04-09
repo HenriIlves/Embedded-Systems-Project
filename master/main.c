@@ -11,20 +11,16 @@
 #include "lcd.h"
 #include "stdutils.h"
 
-#define CMD_IDLE         0x00
-#define CMD_GOING_UP     0x01
-#define CMD_GOING_DOWN   0x02
-#define CMD_DOOR_OPENING 0x03
-#define CMD_DOOR_CLOSING 0x04
-#define CMD_OBSTACLE     0x05
-#define CMD_FAULT        0x06
-
 #define SLAVE_ADDRESS 0b1010111 // 87 as decimal
 
+static void setup(void) {
 
-
+    return;
+}
 
 int main(void) {
+    setup();
 
-    return 0;
+    return(0);
 }
+

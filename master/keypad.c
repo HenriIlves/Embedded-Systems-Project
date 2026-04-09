@@ -1,5 +1,5 @@
 /***************************************************************************************************
-                                   ExploreEmbedded	
+                                   ExploreEmbedded
  ****************************************************************************************************
  * File:   keypad.c
  * Version: 15.0
@@ -7,14 +7,14 @@
  * Website: http://www.exploreembedded.com/wiki
  * Description: Contains the library routines for 4x4 Hex-Keypad
 
-The libraries have been tested on ExploreEmbedded development boards. We strongly believe that the 
-library works on any of development boards for respective controllers. However, ExploreEmbedded 
+The libraries have been tested on ExploreEmbedded development boards. We strongly believe that the
+library works on any of development boards for respective controllers. However, ExploreEmbedded
 disclaims any kind of hardware failure resulting out of usage of libraries, directly or indirectly.
-Files may be subject to change without prior notice. The revision history contains the information 
-related to updates. 
+Files may be subject to change without prior notice. The revision history contains the information
+related to updates.
 
 
-GNU GENERAL PUBLIC LICENSE: 
+GNU GENERAL PUBLIC LICENSE:
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
@@ -36,7 +36,7 @@ Errors and omissions should be reported to codelibraries@exploreembedded.com
 /***************************************************************************************************
                              Revision History
  ****************************************************************************************************
-15.0: Initial version 
+15.0: Initial version
  ***************************************************************************************************/
 
 
@@ -203,22 +203,22 @@ uint8_t KEYPAD_GetKey()
 
 	switch(var_keyPress_u8)                       // Decode the key
 	{
-	case 0xe7: var_keyPress_u8='*'; break; 
-	case 0xeb: var_keyPress_u8='7'; break; 
-	case 0xed: var_keyPress_u8='4'; break; 
-	case 0xee: var_keyPress_u8='1'; break; 
-	case 0xd7: var_keyPress_u8='0'; break; 
-	case 0xdb: var_keyPress_u8='8'; break; 
-	case 0xdd: var_keyPress_u8='5'; break; 
-	case 0xde: var_keyPress_u8='2'; break; 
-	case 0xb7: var_keyPress_u8='#'; break; 
-	case 0xbb: var_keyPress_u8='9'; break; 
-	case 0xbd: var_keyPress_u8='6'; break; 
-	case 0xbe: var_keyPress_u8='3'; break; 
-	case 0x77: var_keyPress_u8='D'; break;  
-	case 0x7b: var_keyPress_u8='C'; break;  
-	case 0x7d: var_keyPress_u8='B'; break;  
-	case 0x7e: var_keyPress_u8='A'; break;  
+	case 0xe7: var_keyPress_u8='*'; break;
+	case 0xeb: var_keyPress_u8='7'; break;
+	case 0xed: var_keyPress_u8='4'; break;
+	case 0xee: var_keyPress_u8='1'; break;
+	case 0xd7: var_keyPress_u8='0'; break;
+	case 0xdb: var_keyPress_u8='8'; break;
+	case 0xdd: var_keyPress_u8='5'; break;
+	case 0xde: var_keyPress_u8='2'; break;
+	case 0xb7: var_keyPress_u8='#'; break;
+	case 0xbb: var_keyPress_u8='9'; break;
+	case 0xbd: var_keyPress_u8='6'; break;
+	case 0xbe: var_keyPress_u8='3'; break;
+	case 0x77: var_keyPress_u8='D'; break;
+	case 0x7b: var_keyPress_u8='C'; break;
+	case 0x7d: var_keyPress_u8='B'; break;
+	case 0x7e: var_keyPress_u8='A'; break;
 	default  : var_keyPress_u8='z'; break;
 	}
 	return(var_keyPress_u8);                      // Return the key
