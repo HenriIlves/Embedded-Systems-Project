@@ -2,4 +2,8 @@
 *.o
 *.hex
 *.elf
+*.xml
+.vs
 
+master/Debug
+slave/Debug
