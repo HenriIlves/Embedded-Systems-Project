@@ -128,76 +128,94 @@ int main(void) {
 
 			//IDLE
 			case IDLE:
-				lcd_clrscr();
-				lcd_puts("Choose floor:");
-				requested_floor = floor_keypad_choice();
+			lcd_clrscr();
+			lcd_puts("Choose floor:");
+			requested_floor = floor_keypad_choice();
 
-				// ── Queue the floor; dequeue next target ──
-				if (requested_floor != -1) {
-					queue_add((uint8_t)requested_floor);
-				}
-				if (queue_remove(&target_floor)) {
-					if ((int8_t)target_floor > current_floor)
-						state = GOING_UP;
-					else if ((int8_t)target_floor < current_floor)
-						state = GOING_DOWN;
-					else
-						state = FAULT;
-				}
-				break;
+			// ── Queue the floor; dequeue next target ──
+			if (requested_floor != -1) {
+				queue_add((uint8_t)requested_floor);
+			}
+			if (queue_remove(&target_floor)) {
+				if ((int8_t)target_floor > current_floor)
+				state = GOING_UP;
+				else if ((int8_t)target_floor < current_floor)
+				state = GOING_DOWN;
+				else
+				state = FAULT;
+			}
+			break;
 
 			//GOING UP
 			case GOING_UP:
-				current_floor++; // placeholder for logic, now just goes up one
-				lcd_clrscr();
-				snprintf(key_str, sizeof(key_str), "Current floor: %02d", current_floor); // Convert numeric value to string
-				break;
+			lcd_clrscr();
+
+			if (current_floor < target_floor) {
+				current_floor++;
+
+				snprintf(key_str, sizeof(key_str), "Current floor: %02d", current_floor);
+				lcd_puts(key_str);
+
+				_delay_ms(800); //Simulated movement
+				} else {
+				state = DOOR_OPENING;
+			}
+			break;
 
 			//GOING DOWN
 			case GOING_DOWN:
-				current_floor--; // placeholder for logic, now just goes down one
-				lcd_clrscr();
-				snprintf(key_str, sizeof(key_str), "Current floor: %02d", current_floor); // Convert numeric value to string
-				break;
+			 lcd_clrscr();
+			
+			 if (current_floor > target_floor) {
+				 current_floor--;
+
+				 snprintf(key_str, sizeof(key_str), "Current floor: %02d", current_floor);
+				 lcd_puts(key_str);
+
+				 _delay_ms(800); //Simulated movement
+				 } else {
+				 state = DOOR_OPENING;
+			 }
+			 break;
 
 			//DOOR OPENING
 			case DOOR_OPENING:
-				lcd_clrscr();
-				lcd_puts("Door Open");
+			lcd_clrscr();
+			lcd_puts("Door Open");
 
-				// Obstacle detection: button press on PA0 
-				if (util_IsBitCleared(PINA, PA0)) {
-					state = OBSTACLE_DETECTION;
-					break;
-				}
+			// Obstacle detection: button press on PA0
+			if (util_IsBitCleared(PINA, PA0)) {
+				state = OBSTACLE_DETECTION;
 				break;
+			}
+			break;
 
 			//OBSTACLE
 			case OBSTACLE_DETECTION:
-				lcd_clrscr();
-				lcd_puts("Obstacle!");
+			lcd_clrscr();
+			lcd_puts("Obstacle!");
 
-				// Melody stops when any keypad key is pressed
-				if (KeypadIsPressed()) {
-					state = DOOR_CLOSING;
-				}
-				break;
+			// Melody stops when any keypad key is pressed
+			if (KeypadIsPressed()) {
+				state = DOOR_CLOSING;
+			}
+			break;
 			
 			//DOOR CLOSING
 			case DOOR_CLOSING:
-				lcd_clrscr();
-				lcd_puts("Door Closing");
-				break;
+			lcd_clrscr();
+			lcd_puts("Door Closing");
+			break;
 
 			//FAULT
 			case FAULT:
-				lcd_clrscr();
-				lcd_puts("Same Floor!");
-				
-				_delay_ms(2000);
+			lcd_clrscr();
+			lcd_puts("Same Floor!");
+			
+			_delay_ms(2000);
 
-				state = IDLE;
-				break;
+			state = IDLE;
+			break;
 		}
 
 		// Send current state to slave after every switch iteration
