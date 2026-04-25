@@ -9,7 +9,7 @@ typedef enum state
     GOING_UP,
     GOING_DOWN,
     DOOR_OPENING,
-	OBSTACLE,
+	OBSTACLE_DETECTION,
     DOOR_CLOSING,
     FAULT,
 } state_t;

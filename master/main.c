@@ -31,6 +31,10 @@ static void setup(void) {
 	lcd_clrscr();
 	
 	KEYPAD_Init(); // Initialize Keypad
+
+	// Obstacle button init (PA0 / Digital 22)
+	util_BitClear(DDRA, PA0);
+	util_BitSet(PORTA, PA0);
 	
 	printf("Setup Ready.\r\n");
 	lcd_puts("Choose floor");
@@ -70,74 +74,134 @@ static int8_t floor_keypad_choice(void)
 		}
 	}
 	return -1;
-}	
+}
+
+// Queued floor requests
+#define QUEUE_MAX 10
+
+static uint8_t floor_queue[QUEUE_MAX];
+static uint8_t queue_head  = 0;
+static uint8_t queue_tail  = 0;
+static uint8_t queue_count = 0;
+
+static uint8_t queue_add(uint8_t floor) {
+	if (queue_count >= QUEUE_MAX) {
+		return 0;
+	}
+
+	floor_queue[queue_tail] = floor;
+	queue_tail = (queue_tail + 1) % QUEUE_MAX;
+	queue_count++;
+
+	return 1;
+}
+
+static uint8_t queue_remove(uint8_t *floor) {
+	if (queue_count == 0) {
+		return 0;
+	}
+
+	*floor = floor_queue[queue_head];
+	queue_head = (queue_head + 1) % QUEUE_MAX;
+	queue_count--;
+
+	return 1;
+}
+
+// Returns 1 if any key is currently held on the keypad.
+static uint8_t KeypadIsPressed(void)
+{
+	M_ROW = 0x0F;
+	return ((M_COL & 0x0F) != 0x0F);
+}
+
 
 int main(void) {
 	static char key_str[32];
 	spi_master_init();
 	setup();
-	
+
+	uint8_t target_floor = 0;
+
 	while (1) {
 		switch(state) {
 
 			//IDLE
 			case IDLE:
-			lcd_clrscr();
-			lcd_puts("Choose floor:");
-			requested_floor = floor_keypad_choice();
-			
-			if (requested_floor != -1) {
-				if (requested_floor > current_floor)
-					state = GOING_UP;
-				else if (requested_floor < current_floor)
-					state = GOING_DOWN; 
-				else
-					state = FAULT;
-			}
-			break;
+				lcd_clrscr();
+				lcd_puts("Choose floor:");
+				requested_floor = floor_keypad_choice();
+
+				// ── Queue the floor; dequeue next target ──
+				if (requested_floor != -1) {
+					queue_add((uint8_t)requested_floor);
+				}
+				if (queue_remove(&target_floor)) {
+					if ((int8_t)target_floor > current_floor)
+						state = GOING_UP;
+					else if ((int8_t)target_floor < current_floor)
+						state = GOING_DOWN;
+					else
+						state = FAULT;
+				}
+				break;
 
 			//GOING UP
 			case GOING_UP:
-			current_floor++; // placeholder for logic, now just goes up one
-			lcd_clrscr();
-			snprintf(key_str, sizeof(key_str), "Current floor: %02d", current_floor); // Convert numeric value to string
-			break;
+				current_floor++; // placeholder for logic, now just goes up one
+				lcd_clrscr();
+				snprintf(key_str, sizeof(key_str), "Current floor: %02d", current_floor); // Convert numeric value to string
+				break;
 
 			//GOING DOWN
 			case GOING_DOWN:
-			current_floor--; // placeholder for logic, now just goes down one
-			lcd_clrscr();
-			snprintf(key_str, sizeof(key_str), "Current floor: %02d", current_floor); // Convert numeric value to string
-			break;
+				current_floor--; // placeholder for logic, now just goes down one
+				lcd_clrscr();
+				snprintf(key_str, sizeof(key_str), "Current floor: %02d", current_floor); // Convert numeric value to string
+				break;
 
 			//DOOR OPENING
 			case DOOR_OPENING:
-			lcd_clrscr();
-			lcd_puts("Door Open");
-			break;
+				lcd_clrscr();
+				lcd_puts("Door Open");
+
+				// Obstacle detection: button press on PA0 
+				if (util_IsBitCleared(PINA, PA0)) {
+					state = OBSTACLE_DETECTION;
+					break;
+				}
+				break;
 
 			//OBSTACLE
-			case OBSTACLE:
-			lcd_clrscr();
-			lcd_puts("Obstacle!");
-			break;
+			case OBSTACLE_DETECTION:
+				lcd_clrscr();
+				lcd_puts("Obstacle!");
+
+				// Melody stops when any keypad key is pressed
+				if (KeypadIsPressed()) {
+					state = DOOR_CLOSING;
+				}
+				break;
 			
 			//DOOR CLOSING
 			case DOOR_CLOSING:
-			lcd_clrscr();
-			lcd_puts("Door Closing");
-			break;
+				lcd_clrscr();
+				lcd_puts("Door Closing");
+				break;
 
 			//FAULT
 			case FAULT:
-			lcd_clrscr();
-			lcd_puts("Same Floor!");
-			
-			_delay_ms(2000);
+				lcd_clrscr();
+				lcd_puts("Same Floor!");
+				
+				_delay_ms(2000);
 
-			state = IDLE;
-			break;
+				state = IDLE;
+				break;
 		}
+
+		// Send current state to slave after every switch iteration
+		spi_master_send_state(state);
 	}
 	return (0);
 }
