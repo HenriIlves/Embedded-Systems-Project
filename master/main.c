@@ -183,11 +183,23 @@ int main(void) {
 			lcd_clrscr();
 			lcd_puts("Door Open");
 
-			// Obstacle detection: button press on PA0
-			if (util_IsBitCleared(PINA, PA0)) {
-				state = OBSTACLE_DETECTION;
-				break;
+			// 30 * 100 ms = 3000 ms = 3s.
+			for (uint8_t i = 0; i < 30; i++) {
+
+				// Obstacle detection: button press on PA0
+				if (util_IsBitCleared(PINA, PA0)) {
+					state = OBSTACLE_DETECTION;
+					break;
+				}
+			
+				spi_master_send_state(state);
+				_delay_ms(100);
 			}
+			// check current state
+			if(state == DOOR_OPENING){
+				state= DOOR_CLOSING;
+			}
+
 			break;
 
 			//OBSTACLE
@@ -205,6 +217,15 @@ int main(void) {
 			case DOOR_CLOSING:
 			lcd_clrscr();
 			lcd_puts("Door Closing");
+
+			// 20 * 100 ms = 2000 ms = 2s.
+			for (uint8_t i = 0; i < 20; i++) {
+
+				spi_master_send_state(state);
+				_delay_ms(100);
+			}
+			state = IDLE;
+
 			break;
 
 			//FAULT

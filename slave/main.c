@@ -150,6 +150,21 @@ int main(void)
 			CLEAR_BIT(PORTD, LED_MOVE_PIN);
 		}
 
+		// Door opening LED
+		if(state == DOOR_OPENING){
+			SET_BIT(PORTD, LED_DOOR_OPEN_PIN);
+		} else {
+			CLEAR_BIT(PORTD, LED_DOOR_OPEN_PIN);
+		}
+
+		// Door closing LED
+		if(state == DOOR_CLOSING){
+			SET_BIT(PORTD,LED_DOOR_CLOSE_PIN);
+		} else {
+			CLEAR_BIT(PORTD, LED_DOOR_CLOSE_PIN);
+		}
+
+
 		if (state == OBSTACLE_DETECTION) {
 			play_obstacle_melody();
 		}
