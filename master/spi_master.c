@@ -10,6 +10,8 @@ void spi_master_init(void)
     DDRB |= (1 << PB1);
     DDRB |= (1 << PB2);
 
+    DDRB &= ~(1 << PB3); // MISO as input
+
     SPCR |= (1 << SPE);  // enable SPI
     SPCR |= (1 << MSTR); // select master mode
 
