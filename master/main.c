@@ -18,9 +18,7 @@
 #define MAX_FLOOR 99
 #define NO_KEY_PRESSED  (0xFF)
 
-// Global variables
 volatile state_t state = IDLE;
-
 int8_t requested_floor = -1;
 int8_t current_floor = 0;
 
@@ -37,7 +35,7 @@ static void setup(void) {
 	util_BitSet(PORTA, PA0);
 	
 	printf("Setup Ready.\r\n");
-	lcd_puts("Choose floor");
+	lcd_puts("Choose floor:");
 }
 
 // Keypad and IDLE logic
@@ -58,19 +56,24 @@ static int8_t floor_keypad_choice(void)
 		lcd_puts("Cleared");
 		return -1;
 	}
-	if (key_signal == '#') {
-		if (memory <= MAX_FLOOR && memory >= MIN_FLOOR){
-			int8_t result = (int8_t)memory;
-			memory = 0;
-			return result;
-		}
-	}
-	
 	if (key_signal >= '0' && key_signal <= '9') {
 		uint8_t key_value = key_signal - '0'; // ASCII value to numeric value
 		if (memory < 100) {
 			memory *= 10;
 			memory += key_value;
+		}
+	}
+
+	if (key_signal == '#') {
+		if (memory <= MAX_FLOOR && memory >= MIN_FLOOR){
+			int8_t result = (int8_t)memory;
+			memory = 0;
+			return result;
+		}	else {
+			memory = 0;
+			lcd_clrscr();
+			lcd_puts("Invalid floor number");
+			return -1;
 		}
 	}
 	return -1;
@@ -122,14 +125,10 @@ int main(void) {
 	setup();
 
 	uint8_t target_floor = 0;
-
 	while (1) {
 		switch(state) {
-
 			//IDLE
 			case IDLE:
-			lcd_clrscr();
-			lcd_puts("Choose floor:");
 			requested_floor = floor_keypad_choice();
 
 			// ── Queue the floor; dequeue next target ──
