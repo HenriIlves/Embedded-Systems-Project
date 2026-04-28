@@ -73,7 +73,7 @@ static int8_t floor_keypad_choice(void)
 			int8_t result = (int8_t)memory;
 			memory = 0;
 			return result;
-		}	else {
+			}	else {
 			memory = 0;
 			lcd_clrscr();
 			lcd_puts("Invalid floor number");
@@ -133,119 +133,123 @@ int main(void) {
 		switch(state) {
 			//IDLE
 			case IDLE:
-				printf("idle\n\r");
-				requested_floor = floor_keypad_choice();
+			printf("idle\n\r");
+			requested_floor = floor_keypad_choice();
 
-				// ── Queue the floor; dequeue next target ──
-				if (requested_floor != -1) {
-					queue_add((uint8_t)requested_floor);
-				}
-				if (queue_remove(&target_floor)) {
-					if ((int8_t)target_floor > current_floor)
-						state = GOING_UP;
-					else if ((int8_t)target_floor < current_floor)
-						state = GOING_DOWN;
-					else
-						state = FAULT;
-				}
-				break;
+			// ── Queue the floor; dequeue next target ──
+			if (requested_floor != -1) {
+				queue_add((uint8_t)requested_floor);
+			}
+			if (queue_remove(&target_floor)) {
+				if ((int8_t)target_floor > current_floor)
+				state = GOING_UP;
+				else if ((int8_t)target_floor < current_floor)
+				state = GOING_DOWN;
+				else
+				state = FAULT;
+			}
+			break;
 
 			//GOING UP
 			case GOING_UP:
-				lcd_clrscr();
-				printf("going up\n\r");
+			lcd_clrscr();
+			printf("going up\n\r");
 
-				if (current_floor < target_floor) {
-					current_floor++;
+			if (current_floor < target_floor) {
+				current_floor++;
 
-					snprintf(key_str, sizeof(key_str), "Going up: %02d", current_floor);
-					lcd_puts(key_str);
+				snprintf(key_str, sizeof(key_str), "Floor: %02d", current_floor);
+				lcd_puts(key_str);
+				lcd_gotoxy(0,1);
+				lcd_puts("Going up");
 
-					_delay_ms(800); //Simulated movement
+				_delay_ms(800); //Simulated movement
 				} else {
-					state = DOOR_OPENING;
-				}
-				break;
+				state = DOOR_OPENING;
+			}
+			break;
 
 			//GOING DOWN
 			case GOING_DOWN:
-				lcd_clrscr();
-				printf("going down\n\r");
-				
-				if (current_floor > target_floor) {
-					current_floor--;
+			lcd_clrscr();
+			printf("going down\n\r");
+			
+			if (current_floor > target_floor) {
+				current_floor--;
 
-					snprintf(key_str, sizeof(key_str), "Going down: %02d", current_floor);
-					lcd_puts(key_str);
+				snprintf(key_str, sizeof(key_str), "Floor: %02d", current_floor);
+				lcd_puts(key_str);
+				lcd_gotoxy(0,1);
+				lcd_puts("Going down");
 
-					_delay_ms(800); //Simulated movement
-					} else {
-					state = DOOR_OPENING;
-				}
-				break;
+				_delay_ms(800); //Simulated movement
+				} else {
+				state = DOOR_OPENING;
+			}
+			break;
 
 			//DOOR OPENING
 			case DOOR_OPENING:
-				lcd_clrscr();
-				lcd_puts("Door Open");
-				printf("door opening\n\r");
+			lcd_clrscr();
+			lcd_puts("Door Open");
+			printf("door opening\n\r");
 
-				// 30 * 100 ms = 3000 ms = 3s.
-				for (uint8_t i = 0; i < 30; i++) {
+			// 30 * 100 ms = 3000 ms = 3s.
+			for (uint8_t i = 0; i < 30; i++) {
 
-					// Obstacle detection: button press on PA0
-					if (util_IsBitCleared(PINA, PA0)) {
-						state = OBSTACLE_DETECTION;
-						break;
-					}
+				// Obstacle detection: button press on PA0
+				if (util_IsBitCleared(PINA, PA0)) {
+					state = OBSTACLE_DETECTION;
+					break;
+				}
 				
-					_delay_ms(100);
-				}
-				// check current state
-				if(state == DOOR_OPENING){
-					state= DOOR_CLOSING;
-				}
+				_delay_ms(100);
+			}
+			// check current state
+			if(state == DOOR_OPENING){
+				state= DOOR_CLOSING;
+			}
 
-				break;
+			break;
 
 			//OBSTACLE
 			case OBSTACLE_DETECTION:
-				lcd_clrscr();
-				lcd_puts("Obstacle!");
-				printf("obstacle\n\r");
+			lcd_clrscr();
+			lcd_puts("Obstacle!");
+			printf("obstacle\n\r");
 
-				// Melody stops when any keypad key is pressed
-				if (KeypadIsPressed()) {
-					state = DOOR_CLOSING;
-				}
-				break;
+			// Melody stops when any keypad key is pressed
+			if (KeypadIsPressed()) {
+				state = DOOR_CLOSING;
+			}
+			break;
 			
 			//DOOR CLOSING
 			case DOOR_CLOSING:
-				lcd_clrscr();
-				lcd_puts("Door Closing");
-				printf("door closing\n\r");
+			lcd_clrscr();
+			lcd_puts("Door Closing");
+			printf("door closing\n\r");
 
-				// 20 * 100 ms = 2000 ms = 2s.
-				for (uint8_t i = 0; i < 20; i++) {
+			// 20 * 100 ms = 2000 ms = 2s.
+			for (uint8_t i = 0; i < 20; i++) {
 
-					_delay_ms(100);
-				}
-				state = IDLE;
-				lcd_clrscr();
-				lcd_puts("Choose floor:");
-				break;
+				_delay_ms(100);
+			}
+			state = IDLE;
+			lcd_clrscr();
+			lcd_puts("Choose floor:");
+			break;
 
 			//FAULT
 			case FAULT:
-				lcd_clrscr();
-				lcd_puts("Same Floor!");
-				printf("faultg\n\r");
-				
-				_delay_ms(2000);
+			lcd_clrscr();
+			lcd_puts("Same Floor!");
+			printf("faultg\n\r");
+			
+			_delay_ms(2000);
 
-				state = IDLE;
-				break;
+			state = IDLE;
+			break;
 		}
 
 		// Send current state to slave after every switch iteration
