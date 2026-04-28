@@ -62,6 +62,10 @@ static int8_t floor_keypad_choice(void)
 			memory *= 10;
 			memory += key_value;
 		}
+		lcd_clrscr();
+		static char dis_mem[32];
+		snprintf(dis_mem, sizeof(dis_mem), "Key Pressed: %d", memory);
+		lcd_puts(dis_mem);
 	}
 
 	if (key_signal == '#') {
