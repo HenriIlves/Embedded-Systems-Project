@@ -195,7 +195,6 @@ int main(void) {
 						break;
 					}
 				
-					spi_master_send_state(state);
 					_delay_ms(100);
 				}
 				// check current state
@@ -226,11 +225,11 @@ int main(void) {
 				// 20 * 100 ms = 2000 ms = 2s.
 				for (uint8_t i = 0; i < 20; i++) {
 
-					spi_master_send_state(state);
 					_delay_ms(100);
 				}
 				state = IDLE;
-
+				lcd_clrscr();
+				lcd_puts("Choose floor:");
 				break;
 
 			//FAULT
