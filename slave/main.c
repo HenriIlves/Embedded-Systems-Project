@@ -11,30 +11,30 @@
 #include "tune.h"
 #include "spi_slave.h"
 
-#define LED_MOVE_PIN        PD4
-#define LED_DOOR_OPEN_PIN   PD5
-#define LED_DOOR_CLOSE_PIN  PD6
-#define LED_OBSTACLE_PIN    PD7
+#define LED_MOVE_PIN        PIN7
+#define LED_DOOR_OPEN_PIN   PIN6
+#define LED_DOOR_CLOSE_PIN  PIN5
+#define LED_OBSTACLE_PIN    PIN4
 
 // Non-stop background melody: Smoke on the Water (Deep Purple)
 note_t smokeInTheWater[] = {
-	{G3, QUARTER},
-	{AS3, QUARTER},
-	{C4, HALF},
+	{G3, HALF},
+	{AS3, HALF},
+	{C4, FULL},
 	{0, QUARTER},
 
-	{G3, QUARTER},
-	{AS3, QUARTER},
+	{G3, HALF},
+	{AS3, HALF},
 	{CS4, QUARTER},
-	{C4, HALF},
+	{C4, FULL},
 	{0, QUARTER},
 
-	{G3, QUARTER},
-	{AS3, QUARTER},
-	{C4, HALF},
+	{G3, HALF},
+	{AS3, HALF},
+	{C4, FULL},
 	{0, QUARTER},
 
-	{AS3, QUARTER},
+	{AS3, HALF},
 	{G3, FULL},
 	{0, FULL},
 };
@@ -43,24 +43,24 @@ note_t smokeInTheWater[] = {
 
 // Obstacle melody: Seven Nation Army (The White Stripes)
 static note_t sevenNationArmy[] = {
-	{E3, HALF},
+	{E3, FULL},
 	{0,  QUARTER},
 	{E3, QUARTER},
-	{G3, QUARTER},
-	{E3, QUARTER},
-	{D3, QUARTER},
-	{C3, HALF},
-	{B2, HALF},
-	{0,  FULL},
+	{G3, QUARTER + QUARTER/2},
+	{E3, QUARTER + QUARTER/2},
+	{D3, QUARTER + QUARTER/2},
+	{C3, FULL},
+	{B2, FULL},
+	{0,  HALF},
 };
 
 #define OBSTACLE_MELODY_SIZE (sizeof(sevenNationArmy) / sizeof(note_t))
 
 
-// 1 = obstacle melody is active; backgroung melody paused
+// 1 = obstacle melody is active
 static volatile uint8_t buzzer_override = 0;
 
-// ── Non-stop buzzer tick – called from Timer0 ISR every 10 ms ─────────────
+// Non-stop buzzer tick
 void nonStop_tick(uint32_t ticks)
 {
 	if (buzzer_override) return;
@@ -77,7 +77,7 @@ void nonStop_tick(uint32_t ticks)
 		note_t note = smokeInTheWater[bg_note_index];
 		if (note.frequency_hz == 0) {
 			timer1_channel_A_off();
-			} else {
+		} else {
 			timer1_set_frequency(note.frequency_hz);
 			timer1_channel_A_on();
 		}
