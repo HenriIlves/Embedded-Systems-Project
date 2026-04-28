@@ -12,7 +12,7 @@ AVRDUDE = avrdude
 SIZE    = avr-size
 
 # ===== Serial / Upload =====
-PORT       = /dev/cu.usbmodem143101  # ls /dev/cu.*  (update to your UNO port)
+PORT       = /dev/cu.usbmodem143401  # ls /dev/cu.*  (update to your UNO port)
 BAUD       = 115200
 PROGRAMMER = arduino
 

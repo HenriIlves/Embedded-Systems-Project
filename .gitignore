@@ -4,6 +4,7 @@
 *.elf
 *.xml
 .vs
+Makefile/
 
 master/Debug
 slave/Debug
