@@ -38,7 +38,7 @@ static void setup(void) {
 
 	lcd_puts("Floor: 0");
 	lcd_gotoxy(0,1);
-	lcd_puts("Choose floor:");
+	lcd_puts("Choose floor");
 }
 
 // Keypad and IDLE logic
@@ -55,8 +55,16 @@ static int8_t floor_keypad_choice(void)
 	// Clear display & memory
 	if (key_signal == '*') {
 		memory = 0;
+		lcd_gotoxy(0,1);
+		lcd_puts("Cleared           ");
+
+		_delay_ms(2000);
 		lcd_clrscr();
-		lcd_puts("Cleared");
+		static char floorstring[16];
+		snprintf(floorstring, sizeof(floorstring), "Floor: %02d", current_floor);
+		lcd_puts(floorstring);
+		lcd_gotoxy(0,1);
+		lcd_puts("Choose floor");
 		return -1;
 	}
 	if (key_signal >= '0' && key_signal <= '9') {
@@ -225,10 +233,14 @@ int main(void) {
 			lcd_puts("Obstacle!");
 			printf("obstacle\n\r");
 
-			// Melody stops when any keypad key is pressed
-			if (KeypadIsPressed()) {
-				state = DOOR_CLOSING;
+			while (1) {
+				// Melody stops when any keypad key is pressed
+				if (KeypadIsPressed()) {
+					state = DOOR_CLOSING;
+					break;
+				}
 			}
+			
 			break;
 			
 			//DOOR CLOSING
@@ -248,7 +260,7 @@ int main(void) {
 			lcd_clrscr();
 			lcd_puts(key_str);
 			lcd_gotoxy(0,1);
-			lcd_puts("Choose floor:");
+			lcd_puts("Choose floor");
 			break;
 
 			//FAULT
@@ -257,10 +269,12 @@ int main(void) {
 			lcd_puts(key_str);
 			lcd_gotoxy(0,1);
 			lcd_puts("Same Floor!");
-			printf("faultg\n\r");
+			printf("fault\n\r");
 			
-			_delay_ms(2000);
+			_delay_ms(4000);
 
+			lcd_gotoxy(0,1);
+			lcd_puts("Choose floor");
 			state = IDLE;
 			break;
 		}
