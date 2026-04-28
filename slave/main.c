@@ -11,10 +11,10 @@
 #include "tune.h"
 #include "spi_slave.h"
 
-#define LED_MOVE_PIN        PIN7
-#define LED_DOOR_OPEN_PIN   PIN6
-#define LED_DOOR_CLOSE_PIN  PIN5
-#define LED_OBSTACLE_PIN    PIN4
+#define LED_MOVE_PIN        PIN4
+#define LED_DOOR_OPEN_PIN   PIN5
+#define LED_DOOR_CLOSE_PIN  PIN6
+#define LED_OBSTACLE_PIN    PIN7
 
 // Non-stop background melody: Smoke on the Water (Deep Purple)
 note_t smokeInTheWater[] = {

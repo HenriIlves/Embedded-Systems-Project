@@ -35,6 +35,9 @@ static void setup(void) {
 	util_BitSet(PORTA, PA0);
 	
 	printf("Setup Ready.\r\n");
+
+	lcd_puts("Floor: 0");
+	lcd_gotoxy(0,1);
 	lcd_puts("Choose floor:");
 }
 
@@ -75,8 +78,8 @@ static int8_t floor_keypad_choice(void)
 			return result;
 			}	else {
 			memory = 0;
-			lcd_clrscr();
-			lcd_puts("Invalid floor number");
+			lcd_gotoxy(0,1);
+			lcd_puts("Invalid floor");
 			return -1;
 		}
 	}
