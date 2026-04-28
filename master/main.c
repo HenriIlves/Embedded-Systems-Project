@@ -191,6 +191,8 @@ int main(void) {
 			//DOOR OPENING
 			case DOOR_OPENING:
 			lcd_clrscr();
+			lcd_puts(key_str);
+			lcd_gotoxy(0,1);
 			lcd_puts("Door Open");
 			printf("door opening\n\r");
 
@@ -215,6 +217,8 @@ int main(void) {
 			//OBSTACLE
 			case OBSTACLE_DETECTION:
 			lcd_clrscr();
+			lcd_puts(key_str);
+			lcd_gotoxy(0,1);
 			lcd_puts("Obstacle!");
 			printf("obstacle\n\r");
 
@@ -227,6 +231,8 @@ int main(void) {
 			//DOOR CLOSING
 			case DOOR_CLOSING:
 			lcd_clrscr();
+			lcd_puts(key_str);
+			lcd_gotoxy(0,1);
 			lcd_puts("Door Closing");
 			printf("door closing\n\r");
 
@@ -237,12 +243,16 @@ int main(void) {
 			}
 			state = IDLE;
 			lcd_clrscr();
+			lcd_puts(key_str);
+			lcd_gotoxy(0,1);
 			lcd_puts("Choose floor:");
 			break;
 
 			//FAULT
 			case FAULT:
 			lcd_clrscr();
+			lcd_puts(key_str);
+			lcd_gotoxy(0,1);
 			lcd_puts("Same Floor!");
 			printf("faultg\n\r");
 			
