@@ -12,7 +12,7 @@ AVRDUDE = avrdude
 SIZE    = avr-size
 
 # ===== Serial / Upload =====
-PORT       = /dev/cu.usbmodem143201  # ls /dev/cu.*  (update to your MEGA port)
+PORT       = /dev/cu.usbmodem14321201  # ls /dev/cu.*  (update to your MEGA port)
 BAUD       = 115200
 PROGRAMMER = wiring
 

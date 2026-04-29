@@ -94,37 +94,6 @@ static int8_t floor_keypad_choice(void)
 	return -1;
 }
 
-// Queued floor requests
-#define QUEUE_MAX 10
-
-static uint8_t floor_queue[QUEUE_MAX];
-static uint8_t queue_head  = 0;
-static uint8_t queue_tail  = 0;
-static uint8_t queue_count = 0;
-
-static uint8_t queue_add(uint8_t floor) {
-	if (queue_count >= QUEUE_MAX) {
-		return 0;
-	}
-
-	floor_queue[queue_tail] = floor;
-	queue_tail = (queue_tail + 1) % QUEUE_MAX;
-	queue_count++;
-
-	return 1;
-}
-
-static uint8_t queue_remove(uint8_t *floor) {
-	if (queue_count == 0) {
-		return 0;
-	}
-
-	*floor = floor_queue[queue_head];
-	queue_head = (queue_head + 1) % QUEUE_MAX;
-	queue_count--;
-
-	return 1;
-}
 
 // Returns 1 if any key is currently held on the keypad.
 static uint8_t KeypadIsPressed(void)
@@ -147,17 +116,15 @@ int main(void) {
 			printf("idle\n\r");
 			requested_floor = floor_keypad_choice();
 
-			// ── Queue the floor; dequeue next target ──
 			if (requested_floor != -1) {
-				queue_add((uint8_t)requested_floor);
-			}
-			if (queue_remove(&target_floor)) {
+				target_floor = (uint8_t)requested_floor;
+				
 				if ((int8_t)target_floor > current_floor)
-				state = GOING_UP;
+					state = GOING_UP;
 				else if ((int8_t)target_floor < current_floor)
-				state = GOING_DOWN;
+					state = GOING_DOWN;
 				else
-				state = FAULT;
+					state = FAULT;
 			}
 			break;
 
@@ -279,8 +246,11 @@ int main(void) {
 			break;
 		}
 
-		// Send current state to slave after every switch iteration
-		spi_master_send_state(state);
+		static state_t last_sent_state = IDLE;
+		if (state != last_sent_state) {
+			spi_master_send_state(state);
+			last_sent_state = state;
+		}
 	}
 	return (0);
 }
