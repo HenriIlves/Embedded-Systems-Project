@@ -17,6 +17,7 @@
 #define LED_OBSTACLE_PIN    PIN7
 
 // Non-stop background melody: Smoke on the Water (Deep Purple)
+// Author: Henri Ilves
 note_t smokeInTheWater[] = {
 	{G3, HALF},
 	{AS3, HALF},
@@ -41,6 +42,7 @@ note_t smokeInTheWater[] = {
 
 #define smokeInTheWater_SIZE (sizeof(smokeInTheWater) / sizeof(note_t))
 
+// Author: Henri Ilves
 // Obstacle melody: Seven Nation Army (The White Stripes)
 static note_t sevenNationArmy[] = {
 	{E3, FULL},
@@ -61,6 +63,7 @@ static note_t sevenNationArmy[] = {
 static volatile uint8_t buzzer_override = 0;
 
 // Non-stop buzzer tick
+// Author: Henri Ilves
 void nonStop_tick(uint32_t ticks)
 {
 	if (buzzer_override) return;
@@ -85,6 +88,7 @@ void nonStop_tick(uint32_t ticks)
 }
 
 // Obstacle detection
+// Author: Henri Ilves
 static void play_obstacle_melody(void)
 {
 	// Pause non-stop buzzer
@@ -144,6 +148,7 @@ int main(void)
 		state_t state = spi_slave_get_state();
 
 		// Movement LED
+		// Author: Maija Lehtosaari
 		if (state == GOING_UP || state == GOING_DOWN) {
 			SET_BIT(PORTD, LED_MOVE_PIN);
 			} else {
@@ -151,6 +156,7 @@ int main(void)
 		}
 
 		// Door opening LED
+		// Author: Juho Koski
 		if(state == DOOR_OPENING){
 			SET_BIT(PORTD, LED_DOOR_OPEN_PIN);
 		} else {
@@ -158,13 +164,14 @@ int main(void)
 		}
 
 		// Door closing LED
+		// Author: Juho Koski
 		if(state == DOOR_CLOSING){
 			SET_BIT(PORTD,LED_DOOR_CLOSE_PIN);
 		} else {
 			CLEAR_BIT(PORTD, LED_DOOR_CLOSE_PIN);
 		}
 
-
+		// Author: Henri Ilves
 		if (state == OBSTACLE_DETECTION) {
 			play_obstacle_melody();
 		}

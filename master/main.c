@@ -23,6 +23,7 @@ int8_t requested_floor = -1;
 int8_t current_floor = 0;
 
 // Setup to initialize LCD and Keypad
+// Author: Maija Lehtosaari
 static void setup(void) {
 	setup_uart_io();
 	lcd_init(LCD_DISP_ON); // Initialize LCD
@@ -42,6 +43,7 @@ static void setup(void) {
 }
 
 // Keypad logic that builds floor number, "*" clears display and "#" returns floor number
+// Author: Maija Lehtosaari
 static int8_t floor_keypad_choice(void)
 {
 	static uint32_t memory = 0;
@@ -99,6 +101,7 @@ static int8_t floor_keypad_choice(void)
 
 
 // Returns 1 if any key is currently held on the keypad.
+// Author: Maija Lehtosaari
 static uint8_t KeypadIsPressed(void)
 {
 	M_ROW = 0x0F;
@@ -114,7 +117,9 @@ int main(void) {
 	uint8_t target_floor = 0;
 	while (1) {
 		switch(state) {
+
 			//IDLE
+			// Author: Maija Lehtosaari
 			case IDLE:
 			printf("idle\n\r");
 			requested_floor = floor_keypad_choice();
@@ -131,7 +136,8 @@ int main(void) {
 			}
 			break;
 
-			//GOING UP
+			// GOING UP
+			// Author: Maija Lehtosaari
 			case GOING_UP:
 			lcd_clrscr();
 			printf("going up\n\r");
@@ -150,7 +156,8 @@ int main(void) {
 			}
 			break;
 
-			//GOING DOWN
+			// GOING DOWN
+			// Author: Maija Lehtosaari
 			case GOING_DOWN:
 			lcd_clrscr();
 			printf("going down\n\r");
@@ -169,7 +176,8 @@ int main(void) {
 			}
 			break;
 
-			//DOOR OPENING
+			// DOOR OPENING
+			// Author: Juho Koski
 			case DOOR_OPENING:
 			lcd_clrscr();
 			lcd_puts(key_str);
@@ -195,7 +203,8 @@ int main(void) {
 
 			break;
 
-			//OBSTACLE
+			// OBSTACLE
+			// Author: Olli Kirkkopelto
 			case OBSTACLE_DETECTION:
 			lcd_clrscr();
 			lcd_puts(key_str);
@@ -213,7 +222,8 @@ int main(void) {
 			
 			break;
 			
-			//DOOR CLOSING
+			// DOOR CLOSING
+			// Author: Juho Koski
 			case DOOR_CLOSING:
 			lcd_clrscr();
 			lcd_puts(key_str);
@@ -221,19 +231,18 @@ int main(void) {
 			lcd_puts("Door Closing");
 			printf("door closing\n\r");
 
-			// 20 * 100 ms = 2000 ms = 2s.
-			for (uint8_t i = 0; i < 20; i++) {
-
-				_delay_ms(100);
-			}
+			_delay_ms(2000);
+			
 			state = IDLE;
+
 			lcd_clrscr();
 			lcd_puts(key_str);
 			lcd_gotoxy(0,1);
 			lcd_puts("Choose floor");
 			break;
 
-			//FAULT
+			// FAULT
+			// Author: Olli Kirkkopelto
 			case FAULT:
 			lcd_clrscr();
 			lcd_puts(key_str);
