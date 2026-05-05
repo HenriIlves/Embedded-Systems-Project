@@ -148,7 +148,7 @@ int main(void)
 		state_t state = spi_slave_get_state();
 
 		// Movement LED
-		// Author: Maija Lehtosaari
+		// Author: Olli Kirkkopelto
 		if (state == GOING_UP || state == GOING_DOWN) {
 			SET_BIT(PORTD, LED_MOVE_PIN);
 			} else {
