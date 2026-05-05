@@ -1,3 +1,4 @@
+// Author: Aaro Rissanen
 #include "spi_master.h"
 
 #include <avr/io.h>

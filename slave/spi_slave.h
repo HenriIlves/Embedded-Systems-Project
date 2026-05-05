@@ -1,3 +1,4 @@
+// Author: Aaro Rissanen
 #ifndef SPI_SLAVE_H
 #define SPI_SLAVE_H
 
