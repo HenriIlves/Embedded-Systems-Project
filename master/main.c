@@ -137,7 +137,7 @@ int main(void) {
 			break;
 
 			// GOING UP
-			// Author: Maija Lehtosaari
+			// Author: Olli Kirkkopelto
 			case GOING_UP:
 			lcd_clrscr();
 			printf("going up\n\r");
@@ -157,7 +157,7 @@ int main(void) {
 			break;
 
 			// GOING DOWN
-			// Author: Maija Lehtosaari
+			// Author: Olli Kirkkopelto
 			case GOING_DOWN:
 			lcd_clrscr();
 			printf("going down\n\r");
@@ -204,7 +204,7 @@ int main(void) {
 			break;
 
 			// OBSTACLE
-			// Author: Olli Kirkkopelto
+			// Author: Henri Ilves
 			case OBSTACLE_DETECTION:
 			lcd_clrscr();
 			lcd_puts(key_str);
