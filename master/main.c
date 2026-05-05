@@ -41,18 +41,19 @@ static void setup(void) {
 	lcd_puts("Choose floor");
 }
 
-// Keypad and IDLE logic
+// Keypad logic that builds floor number, "*" clears display and "#" returns floor number
 static int8_t floor_keypad_choice(void)
 {
 	static uint32_t memory = 0;
 	uint8_t key_signal = KEYPAD_GetKey();
 	
+	// No key pressed, stay in IDLE
 	if (key_signal == NO_KEY_PRESSED) {
 		return -1;
 	}
 	printf("Keypad: %c\r\n", key_signal);
 	
-	// Clear display & memory
+	// Clear memory and update display to current floor
 	if (key_signal == '*') {
 		memory = 0;
 		lcd_gotoxy(0,1);
@@ -67,22 +68,24 @@ static int8_t floor_keypad_choice(void)
 		lcd_puts("Choose floor");
 		return -1;
 	}
+	// Builds floor by apppending digits to memory, limit under 100
 	if (key_signal >= '0' && key_signal <= '9') {
 		uint8_t key_value = key_signal - '0'; // ASCII value to numeric value
 		if (memory < 100) {
-			memory *= 10;
+			memory *= 10; // e.g. 1 * 10 + 3 = 13
 			memory += key_value;
 		}
+		// Updates display to current input
 		lcd_clrscr();
 		static char dis_mem[32];
 		snprintf(dis_mem, sizeof(dis_mem), "Key Pressed: %ld", memory);
 		lcd_puts(dis_mem);
 	}
-
+	// Confirm and return selected floor
 	if (key_signal == '#') {
 		if (memory <= MAX_FLOOR && memory >= MIN_FLOOR){
-			int8_t result = (int8_t)memory;
-			memory = 0;
+			int8_t result = (int8_t)memory; // Floor number stored to result
+			memory = 0; // Memory reset for next entries
 			return result;
 			}	else {
 			memory = 0;
