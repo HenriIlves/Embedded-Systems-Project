@@ -1,22 +1,18 @@
 .PHONY: all clean flash size
 
-# ===== Project =====
 TARGET = firmware
 MCU    = atmega2560
 F_CPU  = 16000000UL
 
-# ===== Tools =====
 CC      = avr-gcc
 OBJCOPY = avr-objcopy
 AVRDUDE = avrdude
 SIZE    = avr-size
 
-# ===== Serial / Upload =====
-PORT       = /dev/cu.usbmodem14321201  # ls /dev/cu.*  (update to your MEGA port)
+PORT       = /dev/cu.usbmodem14321201  # ls /dev/cu.*
 BAUD       = 115200
 PROGRAMMER = wiring
 
-# ===== Flags =====
 CFLAGS = -Os -Wall -Wextra -std=c17 \
          -DF_CPU=$(F_CPU) \
          -mmcu=$(MCU) \
@@ -24,12 +20,10 @@ CFLAGS = -Os -Wall -Wextra -std=c17 \
 
 LDFLAGS = -mmcu=$(MCU)
 
-# ===== Files =====
 CFILES = $(wildcard *.c)
 HFILES = $(wildcard *.h)
 OBJS   = $(CFILES:.c=.o)
 
-# ===== Targets =====
 all: $(TARGET).hex size
 
 $(TARGET).elf: $(OBJS)

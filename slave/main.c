@@ -62,8 +62,8 @@ static note_t sevenNationArmy[] = {
 // 1 = obstacle melody is active
 static volatile uint8_t buzzer_override = 0;
 
-// Non-stop buzzer tick
 // Author: Henri Ilves
+// Non-stop buzzer tick
 void nonStop_tick(uint32_t ticks)
 {
 	if (buzzer_override) return;
@@ -87,8 +87,8 @@ void nonStop_tick(uint32_t ticks)
 	}
 }
 
-// Obstacle detection
 // Author: Henri Ilves
+// Obstacle detection
 static void play_obstacle_melody(void)
 {
 	// Pause non-stop buzzer
@@ -112,7 +112,7 @@ static void play_obstacle_melody(void)
 
 		if (note.frequency_hz == 0) {
 			timer1_channel_A_off();
-			} else {
+		} else {
 			timer1_set_frequency(note.frequency_hz);
 			timer1_channel_A_on();
 		}
@@ -151,7 +151,7 @@ int main(void)
 		// Author: Olli Kirkkopelto
 		if (state == GOING_UP || state == GOING_DOWN) {
 			SET_BIT(PORTD, LED_MOVE_PIN);
-			} else {
+		} else {
 			CLEAR_BIT(PORTD, LED_MOVE_PIN);
 		}
 

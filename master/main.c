@@ -13,7 +13,6 @@
 #include "stdutils.h"
 #include "spi_master.h"
 
-#define SLAVE_ADDRESS 0b1010111 // 87 as decimal
 #define MIN_FLOOR 0
 #define MAX_FLOOR 99
 #define NO_KEY_PRESSED  (0xFF)
@@ -70,6 +69,7 @@ static int8_t floor_keypad_choice(void)
 		lcd_puts("Choose floor");
 		return -1;
 	}
+
 	// Builds floor by apppending digits to memory, limit under 100
 	if (key_signal >= '0' && key_signal <= '9') {
 		uint8_t key_value = key_signal - '0'; // ASCII value to numeric value
@@ -83,6 +83,7 @@ static int8_t floor_keypad_choice(void)
 		snprintf(dis_mem, sizeof(dis_mem), "Key Pressed: %ld", memory);
 		lcd_puts(dis_mem);
 	}
+
 	// Confirm and return selected floor
 	if (key_signal == '#') {
 		if (memory <= MAX_FLOOR && memory >= MIN_FLOOR){
@@ -99,15 +100,13 @@ static int8_t floor_keypad_choice(void)
 	return -1;
 }
 
-
+// Author: Henri Ilves
 // Returns 1 if any key is currently held on the keypad.
-// Author: Maija Lehtosaari
 static uint8_t KeypadIsPressed(void)
 {
 	M_ROW = 0x0F;
 	return ((M_COL & 0x0F) != 0x0F);
 }
-
 
 int main(void) {
 	static char key_str[32];
@@ -121,143 +120,144 @@ int main(void) {
 			//IDLE
 			// Author: Maija Lehtosaari
 			case IDLE:
-			printf("idle\n\r");
-			requested_floor = floor_keypad_choice();
+				printf("idle\n\r");
+				requested_floor = floor_keypad_choice();
 
-			if (requested_floor != -1) {
-				target_floor = (uint8_t)requested_floor;
-				
-				if ((int8_t)target_floor > current_floor)
-					state = GOING_UP;
-				else if ((int8_t)target_floor < current_floor)
-					state = GOING_DOWN;
-				else
-					state = FAULT;
-			}
-			break;
+				if (requested_floor != -1) {
+					target_floor = (uint8_t)requested_floor;
+					
+					if ((int8_t)target_floor > current_floor)
+						state = GOING_UP;
+					else if ((int8_t)target_floor < current_floor)
+						state = GOING_DOWN;
+					else
+						state = FAULT;
+				}
+				break;
 
 			// GOING UP
 			// Author: Olli Kirkkopelto
 			case GOING_UP:
-			lcd_clrscr();
-			printf("going up\n\r");
+				lcd_clrscr();
+				printf("going up\n\r");
 
-			if (current_floor < target_floor) {
-				current_floor++;
+				if (current_floor < target_floor) {
+					current_floor++;
 
-				snprintf(key_str, sizeof(key_str), "Floor: %02d", current_floor);
-				lcd_puts(key_str);
-				lcd_gotoxy(0,1);
-				lcd_puts("Going up");
+					snprintf(key_str, sizeof(key_str), "Floor: %02d", current_floor);
+					lcd_puts(key_str);
+					lcd_gotoxy(0,1);
+					lcd_puts("Going up");
 
-				_delay_ms(800); //Simulated movement
+					_delay_ms(800); //Simulated movement
 				} else {
-				state = DOOR_OPENING;
-			}
-			break;
+					state = DOOR_OPENING;
+				}
+				break;
 
 			// GOING DOWN
 			// Author: Olli Kirkkopelto
 			case GOING_DOWN:
-			lcd_clrscr();
-			printf("going down\n\r");
-			
-			if (current_floor > target_floor) {
-				current_floor--;
+				lcd_clrscr();
+				printf("going down\n\r");
+				
+				if (current_floor > target_floor) {
+					current_floor--;
 
-				snprintf(key_str, sizeof(key_str), "Floor: %02d", current_floor);
-				lcd_puts(key_str);
-				lcd_gotoxy(0,1);
-				lcd_puts("Going down");
+					snprintf(key_str, sizeof(key_str), "Floor: %02d", current_floor);
+					lcd_puts(key_str);
+					lcd_gotoxy(0,1);
+					lcd_puts("Going down");
 
-				_delay_ms(800); //Simulated movement
+					_delay_ms(800); //Simulated movement
 				} else {
-				state = DOOR_OPENING;
-			}
-			break;
+					state = DOOR_OPENING;
+				}
+				break;
 
 			// DOOR OPENING
 			// Author: Juho Koski
 			case DOOR_OPENING:
-			lcd_clrscr();
-			lcd_puts(key_str);
-			lcd_gotoxy(0,1);
-			lcd_puts("Door Open");
-			printf("door opening\n\r");
+				lcd_clrscr();
+				lcd_puts(key_str);
+				lcd_gotoxy(0,1);
+				lcd_puts("Door Open");
+				printf("door opening\n\r");
 
-			// 30 * 100 ms = 3000 ms = 3s.
-			for (uint8_t i = 0; i < 30; i++) {
+				// 30 * 100 ms = 3000 ms = 3s.
+				for (uint8_t i = 0; i < 30; i++) {
 
-				// Obstacle detection: button press on PA0
-				if (util_IsBitCleared(PINA, PA0)) {
-					state = OBSTACLE_DETECTION;
-					break;
+					// Obstacle detection: button press on PA0
+					if (util_IsBitCleared(PINA, PA0)) {
+						state = OBSTACLE_DETECTION;
+						break;
+					}
+					
+					_delay_ms(100);
 				}
-				
-				_delay_ms(100);
-			}
-			// check current state
-			if(state == DOOR_OPENING){
-				state= DOOR_CLOSING;
-			}
+				// check current state
+				if(state == DOOR_OPENING){
+					state= DOOR_CLOSING;
+				}
 
-			break;
+				break;
 
 			// OBSTACLE
 			// Author: Henri Ilves
 			case OBSTACLE_DETECTION:
-			lcd_clrscr();
-			lcd_puts(key_str);
-			lcd_gotoxy(0,1);
-			lcd_puts("Obstacle!");
-			printf("obstacle\n\r");
+				lcd_clrscr();
+				lcd_puts(key_str);
+				lcd_gotoxy(0,1);
+				lcd_puts("Obstacle!");
+				printf("obstacle\n\r");
 
-			while (1) {
-				// Melody stops when any keypad key is pressed
-				if (KeypadIsPressed()) {
-					state = DOOR_CLOSING;
-					break;
+				while (1) {
+					// Melody stops when any keypad key is pressed
+					if (KeypadIsPressed()) {
+						state = DOOR_CLOSING;
+						break;
+					}
 				}
-			}
-			
-			break;
+				
+				break;
 			
 			// DOOR CLOSING
 			// Author: Juho Koski
 			case DOOR_CLOSING:
-			lcd_clrscr();
-			lcd_puts(key_str);
-			lcd_gotoxy(0,1);
-			lcd_puts("Door Closing");
-			printf("door closing\n\r");
+				lcd_clrscr();
+				lcd_puts(key_str);
+				lcd_gotoxy(0,1);
+				lcd_puts("Door Closing");
+				printf("door closing\n\r");
 
-			_delay_ms(2000);
-			
-			state = IDLE;
+				_delay_ms(2000);
+				
+				state = IDLE;
 
-			lcd_clrscr();
-			lcd_puts(key_str);
-			lcd_gotoxy(0,1);
-			lcd_puts("Choose floor");
-			break;
+				lcd_clrscr();
+				lcd_puts(key_str);
+				lcd_gotoxy(0,1);
+				lcd_puts("Choose floor");
+				break;
 
 			// FAULT
 			// Author: Olli Kirkkopelto
 			case FAULT:
-			lcd_clrscr();
-			lcd_puts(key_str);
-			lcd_gotoxy(0,1);
-			lcd_puts("Same Floor!");
-			printf("fault\n\r");
-			
-			_delay_ms(4000);
+				lcd_clrscr();
+				lcd_puts(key_str);
+				lcd_gotoxy(0,1);
+				lcd_puts("Same Floor!");
+				printf("fault\n\r");
+				
+				_delay_ms(4000);
 
-			lcd_gotoxy(0,1);
-			lcd_puts("Choose floor");
-			state = IDLE;
-			break;
+				lcd_gotoxy(0,1);
+				lcd_puts("Choose floor");
+				state = IDLE;
+				break;
 		}
 
+		// Author: Henri Ilves
 		static state_t last_sent_state = IDLE;
 		if (state != last_sent_state) {
 			spi_master_send_state(state);
